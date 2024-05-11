@@ -1,3 +1,5 @@
+const currentDate = dayjs().format('MM DD, YYYY');
+
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
@@ -47,3 +49,11 @@ $('#addTaskBtn').on('click', function (event) {
     modal.find('.modal-title').text('New message to ' + recipient)
     modal.find('.modal-body input').val(recipient)
   })
+
+  //datepicker
+  $( function() {
+    $( "#task-due-date" ).datepicker();
+    $( "#anim" ).on( "change", function() {
+      $( "#datepicker" ).datepicker( "option", "showAnim", $( this ).val() );
+    });
+  } );
