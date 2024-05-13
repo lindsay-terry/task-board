@@ -3,21 +3,26 @@ const taskTitleInput = $('#task-title');
 const dueDateInput = $('#task-due-date');
 const taskDescriptionInput = $('#task-description');
 const addTaskBtn = $('#taskbtn');
-const toDoColumn = $('#to-do');
+const toDoColumn = $('#todo-cards');
 
 
 // Retrieve tasks and nextId from localStorage
-let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-function storeTask(task) {
-    taskList.push(task);
+// let nextId = JSON.parse(localStorage.getItem("nextId"));
+let taskList = JSON.parse(localStorage.getItem("tasks"));
+    if (!taskList) {
+        taskList = [];
+    }
+
+function storeTask(newTask) {
+    taskList.push(newTask);
     localStorage.setItem("tasks", JSON.stringify(taskList));
 }
 
 function getTask(){
-    return JSON.parse(localStorage.getItem("tasks")) || [];
+    return taskList;
 }
 
-let nextId = JSON.parse(localStorage.getItem("nextId"));
+
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -25,23 +30,56 @@ function generateTaskId() {
 }
 
 // Todo: create a function to create a task card
-function createTaskCard(task) {
+function createTaskCard(newTask) {
+    getTask();
+
+    for(let i = 0; i < taskList.length; i++) {
+        const task = taskList[i];
+    
+
     const taskCard = $('<div>');
-    const taskHeader = $('<div>');
+    const taskHeader = $('<h5>');
     const taskBody = $('<div>');
     const taskDescription = $('<p>');
     const taskDueDate =$('<p>');
     const taskDelete = $('<button>');
 
-    taskBody.append(taskDescription, taskDueDate, taskDelete);
+    taskHeader.text(task.title);
+    taskDelete.text('Delete');
+    taskDescription.text(task.description);
+    taskDueDate.text(task.dueDate);
+
+    taskHeader.addClass('task-card-title');
+    taskCard.addClass('task-card sortable');
+    taskBody.addClass('task-card-body');
+    taskDescription.addClass('task-card-text');
+    taskDueDate.addClass('task-card-text');
+    taskDelete.addClass('btn btn-danger delete');
+
+
+
+    toDoColumn.append(taskCard);
     taskCard.append(taskHeader, taskBody);
+    taskBody.append(taskDescription, taskDueDate, taskDelete);
+    
+    }
 
     return taskCard;
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-    
+    let task = getTask();
+    createTaskCard(task);
+
+
+
+
+    $( function() {
+        $( ".sortable" ).sortable({
+          connectWith: ".connectedSortable"
+        }).disableSelection();
+      } );
 
 }
 
@@ -49,17 +87,20 @@ function renderTaskList() {
 function handleAddTask(event){
     event.preventDefault();
     let taskID = generateTaskId()
+        const titleValue = taskTitleInput.val();
+        const dueDateValue = dayjs(dueDateInput.val()).format('MM DD, YYYY');
+        const descriptionValue = descriptionInput.val();
 
-    let task = {
-        title: $('#task-title').val(),
-        dueDate: dayjs($('#task-due-date').val()).format('MM DD, YYYY'),
-        description: $('#task-description').val(),
+    let newTask = {
+        title: titleValue,
+        dueDate: dueDateValue,
+        description: descriptionValue,
         id: taskID,
     }
     
-    localStorage.setItem("nextId", task.id);
-    storeTask(task);
-    console.log(task)
+    localStorage.setItem("nextId", JSON.stringify(task.id));
+    storeTask(newTask);
+    
 }
 
 // Todo: create a function to handle deleting a task
