@@ -7,9 +7,15 @@ const toDoColumn = $('#to-do');
 
 
 // Retrieve tasks and nextId from localStorage
-let taskList = JSON.parse(localStorage.getItem("tasks"));
-if(!taskList) {
-    taskList = [];
+let taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+function storeTask(task) {
+    taskList.push(task);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+}
+
+function getTask(){
+    
+    return JSON.parse(localStorage.getItem("tasks")) || [];
 }
 
 let nextId = JSON.parse(localStorage.getItem("nextId"));
@@ -37,6 +43,7 @@ function createTaskCard(task) {
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
+    
 
 }
 
@@ -44,18 +51,15 @@ function renderTaskList() {
 function handleAddTask(event){
     event.preventDefault();
 
-    const titleValue = taskTitleInput.val().trim(); 
-    const dueDateValue = dayjs(dueDateInput.val()).format('MM DD, YYYY');
-    const descriptionValue = taskDescriptionInput.val().trim();
-
     let task = {
-        title: titleValue,
-        dueDate: dueDateValue,
-        description: descriptionValue,
-        id: generateTaskId(),
-}       
-    taskList.push(task);
-    localStorage.setItem("tasks", JSON.stringify(taskList));
+        title: $('#task-title').val(),
+        dueDate: dayjs($('#task-due-date').val()).format('MM DD, YYYY'),
+        description: $('#task-description').val()
+
+    }
+
+    // generateTaskId();    
+    storeTask(task);
 }
 
 // Todo: create a function to handle deleting a task
@@ -70,14 +74,17 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-    //datepicker
+    addTaskBtn.on('click', handleAddTask);
+    renderTaskList();
+    // datepicker
+    $(function() {
+        $( "#task-due-date" ).datepicker({
+          changeMonth: true,
+          changeYear: true
+        });
+      } );
 
+   
 
 });
 
-$( function() {
-    $( "#task-due-date" ).datepicker({
-      changeMonth: true,
-      changeYear: true
-    });
-  } );
