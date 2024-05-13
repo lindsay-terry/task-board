@@ -14,7 +14,6 @@ function storeTask(task) {
 }
 
 function getTask(){
-    
     return JSON.parse(localStorage.getItem("tasks")) || [];
 }
 
@@ -22,8 +21,7 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
-    let taskId = crypto.randomUUID();
-    localStorage.setItem('nextId', JSON.stringify(taskId));
+    return crypto.randomUUID();
 }
 
 // Todo: create a function to create a task card
@@ -50,16 +48,18 @@ function renderTaskList() {
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
     event.preventDefault();
+    let taskID = generateTaskId()
 
     let task = {
         title: $('#task-title').val(),
         dueDate: dayjs($('#task-due-date').val()).format('MM DD, YYYY'),
-        description: $('#task-description').val()
-
+        description: $('#task-description').val(),
+        id: taskID,
     }
-
-    // generateTaskId();    
+    
+    localStorage.setItem("nextId", task.id);
     storeTask(task);
+    console.log(task)
 }
 
 // Todo: create a function to handle deleting a task
