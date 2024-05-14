@@ -9,7 +9,7 @@ const laneContainer = $('#lane-container');
 
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
-// Retrieve tasks and nextId from localStorage
+// Retrieve tasks and UniqueId from localStorage
 function readFromStorage() {
     let taskList = JSON.parse(localStorage.getItem('tasks'));
         if (!taskList) {
@@ -22,6 +22,17 @@ function saveToStorage(taskList) {
     localStorage.setItem('tasks', JSON.stringify(taskList));
 }
 
+function readIdFromStorage() {
+    let nextId = JSON.parse(localStorage.getItem('nextId'));
+        if (!nextId) {
+            nextId = [];
+        }
+        return nextId;
+}
+
+function saveIdToStorage() {
+    localStorage.setItem('nextId', JSON.stringify(nextId));
+}
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -31,6 +42,7 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(newTask) {
     const taskList = readFromStorage();
+    const nextId = readIdFromStorage();
 
     const taskCard = $('<div>')
         .addClass('card draggable my-3')
@@ -46,7 +58,7 @@ function createTaskCard(newTask) {
     const taskDelete = $('<button>')
         .addClass('btn btn-danger delete')
         .text('Delete')
-        .data('data-project-id', newTask.id);
+        .data('data-task-id', newTask.id);
     taskDelete.on('click', handleDeleteTask);
     
     if (newTask.dueDate && newTask.status !== 'done') {
@@ -170,16 +182,16 @@ function handleAddTask(event){
     }
 
     const taskList = readFromStorage();
-    const taskExists = taskList.some(task => task.id === newTask.id);
-    if (!taskExists) {
-        taskList.push(newTask);
-        
-    }
+    const nextId = readIdFromStorage();
+  
+    taskList.push(newTask);
+    nextId.push(newTask.id);
     
     saveToStorage(taskList);
+    saveIdToStorage(nextId);
     renderTaskList();
     
-
+    
     //  clear task input form after each use
     taskTitleInput.val('');
     dueDateInput.val('');
@@ -189,23 +201,18 @@ function handleAddTask(event){
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
     const taskList = readFromStorage();
-    event.preventDefault();
-    
-    const taskToDelete = event.target.id;
-    const indexToDelete = taskList.findIndex( task => task.id === taskToDelete);
-    if (indexToDelete !== -1) {
-        taskList.splice(indexToDelete, 1);
+    const btnClicked = $(event.target);
+    //retrieve the ID from data attribute assigned to button
+    const taskId = btnClicked.data('data-task-id');
+    const taskIndex = taskList.findIndex(task => task.id === taskId);
+
+    if (taskIndex > -1) {
+        taskList.splice(taskIndex, 1);
     }
 
+    btnClicked.parent().parent('div').remove();
     saveToStorage(taskList);
-    // const taskId = $(this).attr('data-task-id');
-    // const tasks = getTask();
-
-    // tasks.forEach((task) => {
-    //     if (task.id === taskId) {
-    //         tasks.splice(tasks.indexOf(task), 1);
-    //     }
-    // })
+   
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
@@ -220,7 +227,7 @@ $(document).ready(function () {
     const taskList = readFromStorage();
     renderTaskList();
     addTaskBtn.on('click', handleAddTask);
-    laneContainer.on('click', '.btn .delete', handleDeleteTask);
+    laneContainer.on('click', '.btn-danger', handleDeleteTask);
     
     // datepicker
     $(function() {
