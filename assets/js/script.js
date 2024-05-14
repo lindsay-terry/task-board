@@ -65,7 +65,7 @@ function createTaskCard(newTask) {
     taskCard.append(taskHeader, taskBody);
     taskBody.append(taskDescription, taskDueDate, taskDelete);
     return taskCard;
-    saveToStorage(taskList);
+    // saveToStorage(taskList);
 
 
     //create cards for each task in array
@@ -116,8 +116,11 @@ function createTaskCard(newTask) {
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
+    //empty columns to avoid duplicates being rendered on handleAddTask
+    toDoColumn.empty();
+    inProgressColumn.empty();
+    doneColumn.empty();
     const taskList = readFromStorage();
-    console.log(taskList);
 
     for (let task of taskList) {
         if (task.status === 'to-do') {
@@ -170,12 +173,12 @@ function handleAddTask(event){
     const taskExists = taskList.some(task => task.id === newTask.id);
     if (!taskExists) {
         taskList.push(newTask);
-        renderTaskList();
+        
     }
-
-    // taskList.push(newTask);
+    
     saveToStorage(taskList);
-    // renderTaskList(newTask);
+    renderTaskList();
+    
 
     //  clear task input form after each use
     taskTitleInput.val('');
@@ -185,6 +188,16 @@ function handleAddTask(event){
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
+    const taskList = readFromStorage();
+    event.preventDefault();
+    
+    const taskToDelete = event.target.id;
+    const indexToDelete = taskList.findIndex( task => task.id === taskToDelete);
+    if (indexToDelete !== -1) {
+        taskList.splice(indexToDelete, 1);
+    }
+
+    saveToStorage(taskList);
     // const taskId = $(this).attr('data-task-id');
     // const tasks = getTask();
 
