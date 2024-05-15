@@ -2,9 +2,9 @@ const taskTitleInput = $('#task-title');
 const dueDateInput = $('#task-due-date');
 const taskDescriptionInput = $('#task-description');
 const addTaskBtn = $('#taskbtn');
-const toDoColumn = $('#todo-cards');
-const inProgressColumn = $('#in-progress-cards');
-const doneColumn = $('#done-cards');
+const toDoColumn = $('#todo-cards').parent();
+const inProgressColumn = $('#in-progress-cards').parent();
+const doneColumn = $('#done-cards').parent();
 const laneContainer = $('#lane-container');
 
 let taskList = JSON.parse(localStorage.getItem("tasks"));
@@ -93,7 +93,7 @@ function renderTaskList() {
             toDoColumn.append(createTaskCard(task));
         } else if (task.status === 'in-progress') {
             inProgressColumn.append(createTaskCard(task));
-        } else {
+        } else if (task.status === 'done') {
             doneColumn.append(createTaskCard(task));
         }
     }
@@ -169,37 +169,22 @@ function handleDeleteTask(event){
 function handleDrop(event, ui) {
     const taskList = readFromStorage();
 
-    const taskId = ui.draggable.data('data-task-id');
-    const parentColumn = event.target.parentElement;
-    console.log(taskId);
+    const cardId = ui.draggable.data('data-task-id');
+    // const parentColumn = $(event.target);
+    
+    for (i = 0; i < taskList.length; i++) {
+        const task = taskList[i];
+        const newStatus = event.target.id;
+        
+        if (cardId === task.id) {
+            task.status = newStatus;
 
-    for (task of taskList) {
-
-        if (parentColumn === inProgressColumn.parentElement && taskId === task.id) {
-            task.status = 'in-progress';
-        } else if (parentColumn === doneColumn.parentElement && taskId === task.id) {
-            task.status = 'done';
         }
-    }
-    console.log(task.status);
-    saveToStorage(taskList);
-    renderTaskList();
-    
-    // const draggableCard = $(event.target);
-    // if (event.target)data('task-card-id') {
-        
-        // }
-        
-        // const droppedCard = draggableCard.data('task-card-id');
+       
+}   
+saveToStorage(taskList);
+renderTaskList();
 
-
-    // const droppedCardIndex = taskList.findIndex(task => task.id === droppedCard);
-    //     if (droppedCardIndex > -1) {
-    //         taskList[droppedCardIndex].status = 'In Progress';
-    //     }
-
-    
-    
 
 
 }
@@ -222,7 +207,7 @@ $(document).ready(function () {
     //make lanes droppable
     $( ".droppable" ).droppable({
         accept: '.draggable',
-         drop: handleDrop,
+         drop: handleDrop, 
           });
 
     // $(".droppable").droppable("option", "greedy", true);
