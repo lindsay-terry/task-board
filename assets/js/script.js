@@ -77,53 +77,7 @@ function createTaskCard(newTask) {
     taskCard.append(taskHeader, taskBody);
     taskBody.append(taskDescription, taskDueDate, taskDelete);
     return taskCard;
-    // saveToStorage(taskList);
-
-
-    //create cards for each task in array
-    // for(let i = 0; i < taskList.length; i++) {
-    //     const task = taskList[i];
     
-
- 
-    
-
-    // taskHeader.text(task.title);
-    // taskDelete.text('Delete');
-    // taskDescription.text(task.description);
-    // taskDueDate.text(task.dueDate);
-
-    // taskHeader.addClass('card-header');
-    // taskCard.addClass('card draggable my-3');
-    // taskCard.attr('data-task-id', task.id);
-    // taskBody.addClass('card-body');
-    // taskDescription.addClass('card-text');
-    // taskDueDate.addClass('card-text');
-    // taskDelete.addClass('btn btn-danger delete');
-    // taskDelete.attr('data-task-id', task.id);
-    // taskDelete.on('click', handleDeleteTask);
-
-
-    //add colors to cards based on due dates
-    // const now = dayjs();
-    // const taskDue = dayjs(task.dueDate, 'MM DD, YYYY');
-    
-    // if(now.isSame(taskDue, 'day')) {
-    //     taskCard.addClass('bg-warning text-white');
-    // } else if (now.isAfter(taskDue)) {
-    //     taskCard.addClass('bg-danger text-white');
-    //     taskDelete.addClass('border-light');
-    // } else {
-    //     taskCard.addClass('bg-light');
-    // }
-
-    //append card components to card body and append card to column
-    // toDoColumn.append(taskCard);
-    // taskCard.append(taskHeader, taskBody);
-    // taskBody.append(taskDescription, taskDueDate, taskDelete);
-    
-    // }
-
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -143,25 +97,20 @@ function renderTaskList() {
             doneColumn.append(createTaskCard(task));
         }
     }
-    
-    // taskList.forEach(newTask => {
-    //     toDoColumn.append(createTaskCard(newTask));
-    // })
 
-   
-
-    // $('.draggable').draggable({
-    //     opacity: 0.7,
-    //     zIndex: 100,
-    //     helper: function (e) {
-    //       const original = $(e.target).hasClass('ui-draggable')
-    //         ? $(e.target)
-    //         : $(e.target).closest('.ui-draggable');
-    //       return original.clone().css({
-    //         width: original.outerWidth(),
-    //       });
-    //     },
-    //   });
+    //make cards draggable
+    $('.draggable').draggable({
+        opacity: 0.7,
+        zIndex: 100,
+        helper: function (e) {
+          const original = $(e.target).hasClass('ui-draggable')
+            ? $(e.target)
+            : $(e.target).closest('.ui-draggable');
+          return original.clone().css({
+            width: original.outerWidth(),
+          });
+        },
+      });
 
 }
 
@@ -202,6 +151,7 @@ function handleAddTask(event){
 function handleDeleteTask(event){
     const taskList = readFromStorage();
     const btnClicked = $(event.target);
+
     //retrieve the ID from data attribute assigned to button
     const taskId = btnClicked.data('data-task-id');
     const taskIndex = taskList.findIndex(task => task.id === taskId);
@@ -217,8 +167,40 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-//   let taskList = getTask();
-//   let savedId = JSON.parse(localStorage.getItem('nextId'));
+    const taskList = readFromStorage();
+
+    const taskId = ui.draggable.data('data-task-id');
+    const parentColumn = event.target.parentElement;
+    console.log(taskId);
+
+    for (task of taskList) {
+
+        if (parentColumn === inProgressColumn.parentElement && taskId === task.id) {
+            task.status = 'in-progress';
+        } else if (parentColumn === doneColumn.parentElement && taskId === task.id) {
+            task.status = 'done';
+        }
+    }
+    console.log(task.status);
+    saveToStorage(taskList);
+    renderTaskList();
+    
+    // const draggableCard = $(event.target);
+    // if (event.target)data('task-card-id') {
+        
+        // }
+        
+        // const droppedCard = draggableCard.data('task-card-id');
+
+
+    // const droppedCardIndex = taskList.findIndex(task => task.id === droppedCard);
+    //     if (droppedCardIndex > -1) {
+    //         taskList[droppedCardIndex].status = 'In Progress';
+    //     }
+
+    
+    
+
 
 }
 
@@ -239,12 +221,12 @@ $(document).ready(function () {
 
     //make lanes droppable
     $( ".droppable" ).droppable({
-        //  greedy: true,
-        //  drop: handleDrop()
+        accept: '.draggable',
+         drop: handleDrop,
           });
 
     // $(".droppable").droppable("option", "greedy", true);
-    $(".draggable").on("dropover", handleDrop)
+    // $(".draggable").on("dropover", handleDrop)
    
 
 });
