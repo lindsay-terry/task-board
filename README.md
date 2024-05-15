@@ -18,6 +18,7 @@ N/A
 
 To use the Task Board application, simply navigate to the link below.  The user is presented with a blank task board.  By clicking the "Add Task" button, a modal pops up on the screen and prompts the user to fill in some information:  A title for the task, a date (a datepicker makes selecting a date easy), and a description of the task.  Confirming "Add Task" again saves the task and it appears on the screen in the To Do column.  At this point, the user can continue to add as many tasks as they'd like.  A task due in the future will remain white, a task due today will be yellow, and a past-due task will be a threatening red.  The user can drag and drop cards into the In Progress column or to the Done column.  All task cards placed in the done column will turn white regardless of the color they were before.  Refreshing the page at any point will not change the position of any of the cards.  When the task is no longer needed on the board, the user can click the red "Delete" button and the task will be deleted. The user can continue to add tasks at any time.     
 
+Click [here](https://lindsay-terry.github.io/task-board/) to view deployed application.
 
 ![Screenshot of application](./assets/images/taskboardscreenshot.png)
 
