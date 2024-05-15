@@ -9,6 +9,7 @@ const laneContainer = $('#lane-container');
 
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
+
 // Retrieve tasks and UniqueId from localStorage
 function readFromStorage() {
     let taskList = JSON.parse(localStorage.getItem('tasks'));
@@ -34,12 +35,12 @@ function saveIdToStorage() {
     localStorage.setItem('nextId', JSON.stringify(nextId));
 }
 
-// Todo: create a function to generate a unique task id
+//Generates a unique task ID
 function generateTaskId() {
     return crypto.randomUUID();
 }
 
-// Todo: create a function to create a task card
+// Creates html and styling for task cards
 function createTaskCard(newTask) {
     const taskList = readFromStorage();
     const nextId = readIdFromStorage();
@@ -64,7 +65,7 @@ function createTaskCard(newTask) {
     if (newTask.dueDate && newTask.status !== 'done') {
         const dueDate = dayjs(newTask.dueDate, 'MM DD, YYYY');
         const currentDate = dayjs();
-
+        //adjusts color of card by due date
         if (currentDate.isSame(dueDate, 'day')) {
             taskCard.addClass('bg-warning text-white');
         } else if (currentDate.isAfter(dueDate)) {
@@ -73,14 +74,15 @@ function createTaskCard(newTask) {
         }
     }
 
-
+    //appends all elements to taskCard and returns completed card
     taskCard.append(taskHeader, taskBody);
     taskBody.append(taskDescription, taskDueDate, taskDelete);
     return taskCard;
     
 }
 
-// Todo: create a function to render the task list and make cards draggable
+// Renders cards for each task created and makes draggable.
+//Appends to proper column based on task status
 function renderTaskList() {
     //empty columns to avoid duplicates being rendered on handleAddTask
     toDoColumn.empty();
@@ -114,7 +116,7 @@ function renderTaskList() {
 
 }
 
-// Todo: create a function to handle adding a new task
+//Uses user input information to create a task object and pushes to taskList array
 function handleAddTask(event){
     event.preventDefault();
 
@@ -147,7 +149,7 @@ function handleAddTask(event){
     taskDescriptionInput.val('');   
 }
 
-// Todo: create a function to handle deleting a task
+// Handles deleteing tasks
 function handleDeleteTask(event){
     const taskList = readFromStorage();
     const btnClicked = $(event.target);
@@ -156,25 +158,29 @@ function handleDeleteTask(event){
     const taskId = btnClicked.data('data-task-id');
     const taskIndex = taskList.findIndex(task => task.id === taskId);
 
+    //removes from taskList array
     if (taskIndex > -1) {
         taskList.splice(taskIndex, 1);
     }
 
+    //removes rendered card
     btnClicked.parent().parent('div').remove();
     saveToStorage(taskList);
    
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
+//Allows tasks to be dropped into different columns
 function handleDrop(event, ui) {
     const taskList = readFromStorage();
 
+    //Finds card id by accessing data attribute of dragged card
     const cardId = ui.draggable.data('data-task-id');
     
     for (i = 0; i < taskList.length; i++) {
         const task = taskList[i];
         const newStatus = event.target.id;
         
+        //compares card Id and task Id and replaces status in actual object
         if (cardId === task.id) {
             task.status = newStatus;
 
@@ -186,11 +192,15 @@ renderTaskList();
 
 }
 
-// Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+// On window load:
 $(document).ready(function () {
+    //reads local storage
     const taskList = readFromStorage();
+    //renders task list
     renderTaskList();
+    //event listener to add tasks
     addTaskBtn.on('click', handleAddTask);
+    //event listener for deleting tasks
     laneContainer.on('click', '.btn-danger', handleDeleteTask);
     
     // datepicker
