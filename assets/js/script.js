@@ -170,7 +170,6 @@ function handleDrop(event, ui) {
     const taskList = readFromStorage();
 
     const cardId = ui.draggable.data('data-task-id');
-    // const parentColumn = $(event.target);
     
     for (i = 0; i < taskList.length; i++) {
         const task = taskList[i];
@@ -184,8 +183,6 @@ function handleDrop(event, ui) {
 }   
 saveToStorage(taskList);
 renderTaskList();
-
-
 
 }
 
@@ -209,10 +206,6 @@ $(document).ready(function () {
         accept: '.draggable',
          drop: handleDrop, 
           });
-
-    // $(".droppable").droppable("option", "greedy", true);
-    // $(".draggable").on("dropover", handleDrop)
    
-
 });
 
