@@ -24,14 +24,14 @@ function saveToStorage(taskList) {
 }
 
 function readIdFromStorage() {
-    let nextId = JSON.parse(localStorage.getItem('nextId'));
-        if (!nextId) {
-            nextId = [];
-        }
-        return nextId;
+    let nextId= JSON.parse(localStorage.getItem('nextId'));
+    if (!nextId) {
+        nextId = [];
+    }
+    return nextId;   
 }
 
-function saveIdToStorage() {
+function saveIdToStorage(nextId) {
     localStorage.setItem('nextId', JSON.stringify(nextId));
 }
 
@@ -44,7 +44,8 @@ function generateTaskId() {
 function createTaskCard(newTask) {
     const taskList = readFromStorage();
     const nextId = readIdFromStorage();
-
+    
+    
     const taskCard = $('<div>')
         .addClass('card draggable my-3')
         .data('data-task-id', newTask.id);
@@ -124,6 +125,9 @@ function handleAddTask(event){
     const dueDate = dueDateInput.val();
     const taskDescription = taskDescriptionInput.val().trim();
 
+    const taskList = readFromStorage();
+    const nextId = readIdFromStorage();
+
     const newTask = {
         id: generateTaskId(),
         title: taskTitle,
@@ -132,17 +136,18 @@ function handleAddTask(event){
         status: 'to-do',
     }
 
-    const taskList = readFromStorage();
-    const nextId = readIdFromStorage();
-  
-    taskList.push(newTask);
-    nextId.push(newTask.id);
     
-    saveToStorage(taskList);
+    nextId.push({ id: newTask.id });
     saveIdToStorage(nextId);
+    
+
+    taskList.push(newTask);
+    saveToStorage(taskList);
+    
+    
     renderTaskList();
     
-    
+    console.log(taskList, nextId);
     //  clear task input form after each use
     taskTitleInput.val('');
     dueDateInput.val('');
