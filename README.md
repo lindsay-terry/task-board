@@ -24,7 +24,7 @@ Click [here](https://lindsay-terry.github.io/task-board/) to view deployed appli
 
 ## Credits
 
-Utilized third party libraries Bootstrap, Jquery, and Jquery UI.
+Utilized third party libraries Bootstrap, Jquery, dayjs, and Jquery UI.
 
 ## License
 
