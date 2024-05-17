@@ -179,7 +179,6 @@ function handleDeleteTask(event){
     btnClicked.parent().parent('div').remove();
     saveToStorage(taskList);
     saveIdToStorage(nextId);
-    console.log(taskList, nextId);
 }
 
 //Allows tasks to be dropped into different columns
