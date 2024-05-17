@@ -10,7 +10,7 @@ const laneContainer = $('#lane-container');
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
-// Retrieve tasks and UniqueId from localStorage
+//Local storage functions for taskList array and nextId array
 function readFromStorage() {
     let taskList = JSON.parse(localStorage.getItem('tasks'));
         if (!taskList) {
@@ -85,7 +85,7 @@ function createTaskCard(newTask) {
 // Renders cards for each task created and makes draggable.
 //Appends to proper column based on task status
 function renderTaskList() {
-    //empty columns to avoid duplicates being rendered on handleAddTask
+    //empty columns to avoid duplicates being rendered
     toDoColumn.empty();
     inProgressColumn.empty();
     doneColumn.empty();
@@ -117,7 +117,7 @@ function renderTaskList() {
 
 }
 
-//Uses user input information to create a task object and pushes to taskList array
+//Uses user input information to create a task object and pushes data to arrays
 function handleAddTask(event){
     event.preventDefault();
 
@@ -147,7 +147,7 @@ function handleAddTask(event){
     
     renderTaskList();
     
-    console.log(taskList, nextId);
+    
     //  clear task input form after each use
     taskTitleInput.val('');
     dueDateInput.val('');
@@ -157,21 +157,29 @@ function handleAddTask(event){
 // Handles deleteing tasks
 function handleDeleteTask(event){
     const taskList = readFromStorage();
+    const nextId = readIdFromStorage();
     const btnClicked = $(event.target);
 
     //retrieve the ID from data attribute assigned to button
     const taskId = btnClicked.data('data-task-id');
     const taskIndex = taskList.findIndex(task => task.id === taskId);
+    const taskIdIndex = nextId.findIndex(id => id === taskId);
+
 
     //removes from taskList array
     if (taskIndex > -1) {
         taskList.splice(taskIndex, 1);
     }
+    //removes from nextId array
+    if (taskIdIndex) {
+        nextId.splice(taskIdIndex, 1);
+    }
 
     //removes rendered card
     btnClicked.parent().parent('div').remove();
     saveToStorage(taskList);
-   
+    saveIdToStorage(nextId);
+    console.log(taskList, nextId);
 }
 
 //Allows tasks to be dropped into different columns
